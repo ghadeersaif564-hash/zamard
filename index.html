@@ -263,14 +263,17 @@
                 type: "image",
                 media: "https://via.placeholder.com/400x300/ecfdf5/047857?text=Product+3"
               },
-         {
-                name: `ساعة فاخرة رقم $}`,
+         const products = [
+            // توليد المنتجات تلقائياً من الصورة 1 إلى الصورة 69
+            ...Array.from({ length: 69 }, (_, index) => ({
+                name: `ساعة فاخرة رقم ${index + 1}`,
                 category: "ساعات",
-                description: "ساعة أنيقة عالية الجودة بتصميم مميز.",
-                price: "25.000 ر.ع",
+                description: "ساعة أنيقة وعالية الجودة بتصميم مميز.",
+                price: "25.000 ر.ع", // السعر الافتراضي (يمكنك تغييره لاحقاً)
                 type: "image",
-                media: `watch$.jpg`
-              }
+                media: `${index + 1}.jpg` // سيقرأ الملفات تلقائياً: 1.jpg, 2.jpg ... إلى 69.jpg
+            }))
+        ];
         ];
         // ==========================================
 
