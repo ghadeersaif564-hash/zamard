@@ -1,5 +1,4 @@
-
-      <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -7,7 +6,6 @@
     <title>كتالوج المتجر</title>
     <style>
         :root {
-            /* درجات اللون الأخضر الزمردي */
             --emerald-dark: #064e3b;
             --emerald-main: #047857;
             --emerald-light: #10b981;
@@ -26,7 +24,6 @@
             color: var(--text-dark);
             line-height: 1.6;
         }
-        /* الهيدر والشعار ومعلومات التواصل */
         header {
             background: linear-gradient(135deg, var(--emerald-dark), var(--emerald-main));
             color: white;
@@ -76,20 +73,39 @@
             display: inline-block;
         }
 
-        /* شريط البحث والتصنيفات */
-        .controls {
+        /* أزرار الأقسام البارزة وشريط البحث */
+        .controls-wrapper {
             max-width: 1200px;
             margin: 1.5rem auto;
             padding: 0 1rem;
+        }
+        .category-buttons {
             display: flex;
+            justify-content: center;
             flex-wrap: wrap;
-            gap: 1rem;
-            justify-content: space-between;
-            align-items: center;
+            gap: 0.7rem;
+            margin-bottom: 1.2rem;
+        }
+        .cat-btn {
+            padding: 0.6rem 1.4rem;
+            border: 2px solid var(--emerald-main);
+            background-color: white;
+            color: var(--emerald-dark);
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .cat-btn.active, .cat-btn:hover {
+            background-color: var(--emerald-main);
+            color: white;
         }
         .search-box {
-            flex: 1;
-            min-width: 250px;
+            display: block;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
             padding: 0.75rem 1rem;
             border: 2px solid #cbd5e1;
             border-radius: 8px;
@@ -98,14 +114,6 @@
         }
         .search-box:focus {
             border-color: var(--emerald-main);
-        }
-        .category-filter {
-            padding: 0.75rem 1rem;
-            border: 2px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 1rem;
-            background: white;
-            cursor: pointer;
         }
 
         /* شبكة المنتجات */
@@ -185,8 +193,6 @@
         .order-btn:hover {
             background-color: var(--emerald-dark);
         }
-
-        /* أزرار التنقل بين الصفحات */
         .pagination {
             display: flex;
             justify-content: center;
@@ -212,12 +218,10 @@
 <body>
 
     <header>
-        <!-- استبدل كلمة logo.png باسم صورة شعارك المرفوعة في المستودع -->
         <img src="logo.png" alt="شعار المتجر" class="logo">
         <h1>اسم مشروعك التجاري</h1>
         <p>أجود المنتجات بأفضل الأسعار</p>
         
-        <!-- روابط التواصل والحسابات -->
         <div class="contact-bar">
             <a href="tel:+96890000000" class="contact-link">📞 اتصل بنا: 90000000</a>
             <a href="https://wa.me/96890000000" target="_blank" class="contact-link">💬 واتساب</a>
@@ -229,5 +233,159 @@
         </div>
     </header>
 
-    <!-- البحث والتصفية -->
-    <div class="controls
+    <div class="controls-wrapper">
+        <div class="category-buttons" id="categoryButtons">
+            <button class="cat-btn active" data-cat="all">جميع الأقسام</button>
+        </div>
+        <input type="text" id="searchInput" class="search-box" placeholder="ابحث عن اسم المنتج...">
+    </div>
+
+    <div class="container">
+        <div class="catalog-grid" id="catalog"></div>
+        <div class="pagination" id="pagination"></div>
+    </div>
+
+    <script>
+        const whatsappNumber = "96890000000";
+        const itemsPerPage = 24;
+
+        const products = [
+            // 1. قسم الجلاتين: من A إلى Z
+            ...Array.from({ length: 26 }, (_, index) => {
+                const letter = String.fromCharCode(65 + index);
+                return {
+                    name: `منتج جلاتين حرف ${letter}`,
+                    category: "جلاتين",
+                    description: "جلاتين عالي الجودة ومتعدد الاستخدامات.",
+                    price: "15.000 ر.ع",
+                    media: `${letter}.jpg`
+                };
+            }),
+
+            // 2. قسم الهدايا: من 100 إلى 200
+            ...Array.from({ length: 101 }, (_, index) => {
+                const imgNum = 100 + index;
+                return {
+                    name: `طقم هدايا مميز رقم ${imgNum}`,
+                    category: "هدايا",
+                    description: "هدايا فاخرة تناسب جميع المناسبات السعيدة.",
+                    price: "30.000 ر.ع",
+                    media: `${imgNum}.jpg`
+                };
+            }),
+
+            // 3. قسم المكياج والعناية: من 300 إلى 400
+            ...Array.from({ length: 101 }, (_, index) => {
+                const imgNum = 300 + index;
+                return {
+                    name: `منتج مكياج وعناية رقم ${imgNum}`,
+                    category: "مكياج وعناية",
+                    description: "أفضل منتجات التجميل والعناية الشخصية الأصلية.",
+                    price: "12.000 ر.ع",
+                    media: `${imgNum}.jpg`
+                };
+            }),
+
+            // 4. قسم الساعات: من 1 إلى 69
+            ...Array.from({ length: 69 }, (_, index) => ({
+                name: `ساعة فاخرة رقم ${index + 1}`,
+                category: "ساعات",
+                description: "ساعة أنيقة وعالية الجودة بتصميم مميز.",
+                price: "25.000 ر.ع",
+                media: `${index + 1}.jpg`
+            }))
+        ];
+
+        let currentPage = 1;
+        let selectedCategory = 'all';
+        let filteredProducts = [...products];
+
+        const catalogEl = document.getElementById('catalog');
+        const paginationEl = document.getElementById('pagination');
+        const searchInput = document.getElementById('searchInput');
+        const categoryButtonsEl = document.getElementById('categoryButtons');
+
+        // إنشاء أزرار الأقسام تلقائياً
+        const categories = [...new Set(products.map(p => p.category))];
+        categories.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.className = 'cat-btn';
+            btn.textContent = cat;
+            btn.dataset.cat = cat;
+            categoryButtonsEl.appendChild(btn);
+        });
+
+        // تفعيل الضغط على أزرار الأقسام
+        categoryButtonsEl.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('cat-btn')) return;
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            selectedCategory = e.target.dataset.cat;
+            filterData();
+        });
+
+        function renderCatalog() {
+            catalogEl.innerHTML = '';
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageItems = filteredProducts.slice(start, end);
+
+            pageItems.forEach(product => {
+                const message = encodeURIComponent(`مرحباً، أرغب في طلب: ${product.name} - السعر: ${product.price}`);
+                const whatsappLink = `https://wa.me/${whatsappNumber}?text=${message}`;
+
+                const card = `
+                    <div class="product-card">
+                        <div class="media-wrapper">
+                            <span class="category-badge">${product.category}</span>
+                            <img src="${product.media}" alt="${product.name}" loading="lazy">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-title">${product.name}</div>
+                            <div class="product-desc">${product.description}</div>
+                            <div class="product-price">${product.price}</div>
+                            <a href="${whatsappLink}" target="_blank" class="order-btn">اطلب عبر واتساب</a>
+                        </div>
+                    </div>
+                `;
+                catalogEl.innerHTML += card;
+            });
+
+            renderPagination();
+        }
+
+        function renderPagination() {
+            paginationEl.innerHTML = '';
+            const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+            if (totalPages <= 1) return;
+
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('button');
+                btn.textContent = i;
+                btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                btn.onclick = () => {
+                    currentPage = i;
+                    renderCatalog();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+                paginationEl.appendChild(btn);
+            }
+        }
+
+        function filterData() {
+            const query = searchInput.value.toLowerCase();
+            filteredProducts = products.filter(p => {
+                const matchesName = p.name.toLowerCase().includes(query) || p.description.toLowerCase().includes(query);
+                const matchesCat = selectedCategory === 'all' || p.category === selectedCategory;
+                return matchesName && matchesCat;
+            });
+            currentPage = 1;
+            renderCatalog();
+        }
+
+        searchInput.addEventListener('input', filterData);
+        renderCatalog();
+    </script>
+
+</body>
+</html>
